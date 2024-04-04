@@ -1,0 +1,68 @@
+SET SERVEROUTPUT ON
+-- procedure to check the accomodation name that guests used in given date
+
+CREATE OR REPLACE PROCEDURE proc_ck_arrival_date(in_date retreat_accomodations.arrival_date%TYPE) IS
+	CURSOR cur_r_accomodations IS
+	SELECT a.name, r.arrival_date
+	FROM accomodations a
+	JOIN retreat_accomodations r
+	ON a.accomodation_id = r.accomodation_id;
+	vn_count NUMBER(3) := 0; 
+BEGIN
+	FOR rec_cur_r_accomodations IN cur_r_accomodations LOOP
+		IF rec_cur_r_accomodations.arrival_date = in_date
+		THEN
+			DBMS_OUTPUT.PUT_LINE('Accomodation used in that date: ' || rec_cur_r_accomodations.name);
+			vn_count := vn_count + 1;
+		END IF;
+	END LOOP;
+
+	IF vn_count = 0 THEN
+		DBMS_OUTPUT.PUT_LINE('Accomodation not found');
+	END IF;
+		
+EXCEPTION
+	WHEN OTHERS THEN 
+		DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+/
+SHOW ERRORS;
+
+-- test cases
+SELECT accomodation_id, name FROM accomodations 
+WHERE accomodation_id = 1000;
+
+-- RESULT: Accomodation used in that date: FOUNTAIN FUN
+exec proc_ck_arrival_date('04-FEB-21');
+
+-- Shows no accomodation found
+Exec proc_ck_arrival_date('1-jan-44')
+
+
+-- for assignment
+
+CREATE OR REPLACE PROCEDURE proc_update_acc_style_cursor(in_acc_id NUMBER, in_room VARCHAR2) IS
+BEGIN
+	UPDATE accomodation_styles SET room = in_room 
+	WHERE accomodation_style_id = in_acc_id;
+
+	IF SQL%FOUND THEN 
+		DBMS_OUTPUT.PUT_LINE('Record updated');
+	ELSE
+		DBMS_OUTPUT.PUT_LINE('Record Not found');
+	END IF;
+END proc_update_acc_style_cursor;
+/
+SHOW ERRORS;
+
+-- Test
+SELECT accomodation_style_id, room
+FROM accomodation_styles;
+
+EXEC proc_update_acc_style_cursor(4, 'RUSTIC MOUNTAIN')
+
+SELECT accomodation_style_id, room
+FROM accomodation_styles;
+
+EXEC proc_update_acc_style_cursor(5, 'ABC')
+

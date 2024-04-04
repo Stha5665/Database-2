@@ -1,0 +1,114 @@
+INSERT INTO retreats(retreat_id, review, type)
+VALUES (100, 'Nice fresh package within budget',
+retreat_varray_type (
+retreat_type('WEIGHT LOSS', 'Y'),
+retreat_type('REST AND RELAXATION', 'N')));
+
+-- No errors as VARRAY is of size 2
+
+INSERT INTO retreats(retreat_id, review, type)
+VALUES (101, 'Nice fresh package within budget',
+retreat_varray_type (
+retreat_type('ENERGISING', 'Y'),
+retreat_type ('CHALLENGING', 'Y'),
+retreat_type ('HEALTH', 'N')));
+
+-- ERROR showing maximum VARRAY limit
+
+
+INSERT INTO settings(setting_id,place,address)
+SELECT 100,'LAKESIDE', REF(a)
+FROM addresses a
+WHERE a.nation = 'UK';
+
+-- 1 row created, as there is row having nation 'UK' in addresses table
+
+INSERT INTO settings(setting_id,place,address)
+SELECT 101,'LAKESIDE', REF(a)
+FROM addresses a
+WHERE a.nation = 'UK1';
+
+-- 0 row created, as there is no row having 'UK' in addresses table
+
+INSERT INTO accomodations(accomodation_id,accomodation_style_id, name, no_of_room, price_level, facility, contact_media)
+VALUES (144, 4, 'HOTEL GRAND',20, 450,'CASINO',
+contact_table_type(
+	contact_type('TWITTER', 'grand@12', 'grand@123gmail.com'),
+	contact_type('FB', 'GRAND', 'hotelgrand@12gmail.com')));
+
+-- 1 row created
+
+-- test no 6
+EXEC proc_ck_arrival_date('04-FEB-21')
+
+-- test no 7
+Exec proc_ck_arrival_date('1-jan-44')
+
+-- test no 8
+ SELECT SUM(no_of_room) FROM accomodations WHERE accomodation_id = 11 OR accomodation_id = 14;
+
+-- no 9
+ EXECUTE proc_show_no_of_rooms('04-FEB-22', '04-MAR-22')
+
+
+-- no 10
+
+INSERT INTO retreat_accomodations(accomodation_id,retreat_accomodation_id, arrival_date)
+VALUES(14,102, '11-DEC-2022');
+
+-- 11
+
+INSERT INTO retreat_accomodations(accomodation_id,retreat_accomodation_id, arrival_date)
+VALUES(11,108, '28-sep-2022');
+
+-- 12
+
+SELECT accomodation_id, 
+CEIL(price_level),FLOOR(price_level),ROUND(price_level),TRUNC(
+price_level),price_level
+FROM accomodations
+WHERE price_level = (SELECT MAX(price_level) FROM accomodations);
+
+-- test 13
+SELECT a.name, a.facility
+FROM accomodations a
+WHERE a.address.city IN
+(SELECT s.address.city
+FROM settings s
+WHERE s.address.nation = 'UK');
+
+-- test 14
+
+SELECT rs.retreat_setting_id,
+rs.duration,
+ra.retreat_accomodation_id,
+ra.arrival_date
+FROM retreat_settings rs
+LEFT JOIN retreat_accomodations ra
+ON ra.retreat_setting_id = rs.retreat_setting_id;
+
+-- test 15
+
+SELECT a.accomodation_id,a.name,a.address,
+c.email
+FROM accomodations a,
+TABLE(a.contact_media) c;
+
+-- test 16
+
+SELECT a.accomodation_id,
+a.accomodation_style_id,a.name,
+a.no_of_room,
+a.address.road,
+a.address.city,
+a.address.nation
+FROM accomodations a
+ORDER BY accomodation_id;
+
+-- test 17
+
+EXEC proc_update_acc_style_cursor(4, 'RUSTIC MOUNTAIN')
+
+-- test 18
+
+EXEC proc_update_acc_style_cursor(5, 'ABC')

@@ -1,0 +1,83 @@
+--Querying Object Table
+
+SELECT road, city, nation FROM addresses;
+
+--Extracting REFerence from Object Tables
+
+SELECT REF(a), road, city, nation
+FROM addresses a 
+WHERE road = '40 JAPAN STREET';
+
+--Querying Object Columns
+
+SELECT address FROM settings;
+
+--Querying using Dot Notation
+
+SELECT a.address.road, a.address.city, a.address.nation FROM accomodations a;
+
+--Querying Tables with REFs
+
+SELECT setting_id, address FROM settings;
+
+--Querying using DEREF
+
+SELECT setting_id , DEREF(address) 
+FROM settings;
+
+--Querying with a VArray
+
+SELECT type FROM retreats;
+
+SELECT r.retreat_id, t.activity, t.age_limit
+FROM retreats r,
+TABLE(r.type)t
+WHERE retreat_id = 1;
+
+--Querying a Table with a Nest
+
+SELECT social_media FROM accomodations;
+
+SELECT a.accomodation_id, aa.email
+FROM accomodations a, 
+TABLE(a.contact_media)aa
+WHERE aa.contact_detail = 'GRAND';
+
+--Using restriction
+SELECT accomodation_id, name, address
+FROM accomodations a
+WHERE a.address.city != 'BHAKTAPUR';
+
+--Union
+COLUMN review FORMAT A25
+SELECT retreat_id, review FROM retreats
+UNION
+SELECT setting_id, place FROM settings;
+
+-- filtering by no_of_room
+SELECT name, no_of_room
+FROM accomodations 
+WHERE no_of_room IN(10, 20);
+
+SELECT price_level
+FROM accomodations 
+WHERE price_level
+BETWEEN 200 and 650;
+
+-- to find the max no of room group by the accomodation
+SELECT MAX(no_of_room)
+FROM accomodations a
+JOIN retreat_accomodations r
+ON a.accomodation_id = r.accomodation_id
+WHERE r.arrival_date >= '09-DEC-2021' AND r.arrival_date <= '05-MARCH-2022'
+GROUP BY r.accomodation_id;
+
+
+
+
+
+
+
+
+
+

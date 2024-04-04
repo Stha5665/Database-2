@@ -1,0 +1,76 @@
+/* create */
+
+-- Enter path here
+
+-- Query to create object type address_type
+CREATE OR REPLACE TYPE address_type AS OBJECT (
+	road VARCHAR2(35),
+	city VARCHAR2(35),
+	nation VARCHAR2(30));
+/
+
+--To create object table using type
+CREATE TABLE addresses OF address_type;
+
+CREATE OR REPLACE TYPE contact_type AS OBJECT(
+	social_media_name VARCHAR2(35),
+	contact_detail VARCHAR2(40),
+	email VARCHAR2(40));
+/
+
+--To create nested table object type using type definition
+CREATE TYPE contact_table_type AS TABLE OF contact_type;
+/
+
+--To create object type
+CREATE OR REPLACE TYPE retreat_type AS OBJECT (
+	activity VARCHAR2(35), age_limit CHAR(1));
+/
+
+--To create varray using type definition
+CREATE OR REPLACE TYPE retreat_varray_type AS VARRAY (2) OF retreat_type;
+/
+
+--Create Tables
+CREATE TABLE accomodation_styles
+(
+	accomodation_style_id NUMBER(6),
+	room VARCHAR2(50));
+
+-- Using object type, varray and nested table in relational table called accomodations
+CREATE TABLE accomodations (
+	accomodation_id NUMBER(6),
+	accomodation_style_id NUMBER(6),
+	name VARCHAR2(30),
+	no_of_room NUMBER(6),
+	address address_type,
+	price_level NUMBER(3),
+	facility VARCHAR2(50),
+	contact_media contact_table_type)
+	NESTED TABLE contact_media STORE AS nested_contact_table_type;
+
+--Create table retreats using varray
+CREATE TABLE retreats(
+	retreat_id NUMBER(6),
+	review VARCHAR2(100),
+	type retreat_varray_type); 
+
+--Create table settings referencing object table
+CREATE TABLE settings(
+	setting_id NUMBER(6),
+	place VARCHAR2(50),
+	address REF address_type SCOPE IS addresses);                   
+
+--Create table
+CREATE TABLE retreat_settings(
+	setting_id NUMBER(6),
+	retreat_id NUMBER(6),
+	retreat_setting_id NUMBER(6),
+	duration VARCHAR2(25));	
+
+-- creating table retreat_accomodations
+CREATE TABLE retreat_accomodations(
+	accomodation_id NUMBER(6),
+	retreat_setting_id NUMBER(6),
+	retreat_accomodation_id NUMBER(6),
+	arrival_date DATE);

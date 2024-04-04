@@ -1,0 +1,136 @@
+
+-- This function is use to calculate the months between the given date
+CREATE OR REPLACE FUNCTION func_calc_months_between
+(in_date_from retreat_accomodations.arrival_date%TYPE, in_date_to retreat_accomodations.arrival_date%TYPE) RETURN NUMBER IS
+
+-- asks two date values
+-- This variable to store month between these dates
+	vn_no_of_month NUMBER(3);
+BEGIN
+-- calls MONTHS_BETWEEN inbuilt function
+	vn_no_of_month := MONTHS_BETWEEN(in_date_to, in_date_from);
+-- Return the result
+	RETURN vn_no_of_month;
+END;
+/
+SHOW ERRORS;
+
+-- To return total no of rooms used between that dates
+CREATE OR REPLACE FUNCTION func_calc_total_rooms
+(in_date_from DATE, in_date_to DATE) RETURN NUMBER IS
+-- Asks two dates values
+	vn_total_rooms NUMBER;
+BEGIN
+	-- Counting/ adding the no of rooms used
+	SELECT SUM(no_of_room) INTO vn_total_rooms
+	FROM accomodations a
+	JOIN retreat_accomodations r
+	ON a.accomodation_id = r.accomodation_id
+	WHERE r.arrival_date >= in_date_from AND r.arrival_date <= in_date_to;
+	// returning the rooms
+	RETURN vn_total_rooms;
+END;
+/
+
+SHOW ERRORS;
+
+-- This procedure shows the no of room used
+CREATE OR REPLACE PROCEDURE proc_show_no_of_rooms
+(in_date_from retreat_accomodations.arrival_date%TYPE, in_date_to retreat_accomodations.arrival_date%TYPE) IS
+	vn_months NUMBER(3);
+	vn_total_rooms NUMBER;
+BEGIN
+	-- gets months between the date by calling the function
+	vn_months := func_calc_months_between(in_date_from, in_date_to);
+	
+	-- The room used recently within 3 months period is shown
+	IF vn_months < 3 THEN
+		vn_total_rooms := func_calc_total_rooms(in_date_from, in_date_to);
+		DBMS_OUTPUT.PUT_LINE('The total rooms available from date: ' || in_date_from || ' - ' || in_date_to
+		|| ' are: ' || vn_total_rooms);
+		
+	END IF;
+END;
+/
+SHOW ERRORS;
+
+-- Creating trigger before insert or update of arrival date
+CREATE OR REPLACE TRIGGER trig_arrival_date_ck
+BEFORE INSERT OR UPDATE OF arrival_date ON retreat_accomodations
+FOR EACH ROW
+WHEN(NEW.arrival_date IS NOT NULL)
+DECLARE
+-- When new inserted value is not null then 
+-- only this trigger will work
+	vd_today_date retreat_accomodations.arrival_date%TYPE;
+	
+BEGIN
+-- Selecting current system date
+	SELECT sysdate
+	INTO vd_today_date
+	FROM DUAL;
+
+-- if the new entered date is greater than todays date
+-- Raise an error
+	IF :NEW.arrival_date > vd_today_date THEN
+		RAISE_APPLICATION_ERROR(-20000, 'Guest arrived date in their accomodation
+					 cannot be greater than current date'); 
+	
+	ELSE
+		proc_show_no_of_rooms(:NEW.arrival_date, vd_today_date);
+	END IF;
+END;
+/
+SHOW ERRORS;
+		
+
+-- testing the trigger
+
+INSERT INTO retreat_accomodations(accomodation_id,retreat_accomodation_id, arrival_date)
+VALUES(11,128, '28-sep-2022');
+
+-- Raise error as system date is greater than current date
+INSERT INTO retreat_accomodations(accomodation_id,retreat_accomodation_id, arrival_date)
+VALUES(14,129, '11-DEC-2022');		
+	
+-- Additional/Extra procedure demo
+
+-- This procedure to show no of accomodation used 
+-- and the maximum room available during the period
+CREATE OR REPLACE PROCEDURE proc_acc_demo(in_date DATE) IS
+	vn_total_accomodations NUMBER;
+	vn_total_rooms NUMBER;
+BEGIN
+-- counting total accomodations 
+-- and printing result
+	SELECT COUNT(accomodation_id) INTO vn_total_accomodations FROM retreat_accomodations 
+	WHERE arrival_date BETWEEN '05-nov-2021' AND in_date ;
+	DBMS_OUTPUT.PUT_LINE('Total accomodations used: ' || vn_total_accomodations);
+
+-- selecting max no of rooms between these 
+-- dates
+	SELECT Max(no_of_room) INTO vn_total_rooms 
+		FROM accomodations a
+		JOIN retreat_accomodations r
+		ON a.accomodation_id = r.accomodation_id
+		WHERE r.arrival_date BETWEEN '05-nov-2021' AND  in_date;
+	DBMS_OUTPUT.PUT_LINE('Maximum no of room avialable between the period: ' || vn_total_rooms);
+
+END;
+/
+
+-- Testing the accomodation used between dates to match with the result given 
+-- by the proc_acc_demo
+SELECT accomodation_id
+FROM retreat_accomodations r
+WHERE r.arrival_date >= '05-nov-2021' AND r.arrival_date <= '11-oct-2022';
+
+-- This select query return 5 accomodation id
+
+EXECUTE proc_acc_demo('11-oct-2022')
+
+-- After executing the procedure total accomodation used between dates is : 5
+-- Which is same as the result returned by the select query
+
+
+

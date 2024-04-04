@@ -1,0 +1,36 @@
+
+CREATE OR REPLACE PROCEDURE proc_show_setting_place(in_id IN NUMBER, out_place OUT VARCHAR2)
+IS
+BEGIN
+SELECT place INTO out_place 
+FROM settings 
+WHERE setting_id = in_id;
+DBMS_OUTPUT.PUT_LINE(' The place: ' || out_place);
+
+EXCEPTION 
+	WHEN no_data_found THEN
+	DBMS_OUTPUT.PUT_LINE('No place found');
+	WHEN others THEN
+	DBMS_OUTPUT.PUT_LINE('Others error');
+END proc_show_setting_place;
+/
+SHOW ERRORS;
+
+-- EXECUTING
+DECLARE
+	vc_place settings.place%TYPE;
+	vn_counter NUMBER(6) := 1;
+	vn_length NUMBER(6) := 0;
+BEGIN
+	proc_show_setting_place(8,vc_place);
+	DBMS_OUTPUT.PUT_LINE(' The place from Out parameter from procedure:  ' || vc_place); 
+
+	vn_length := LENGTH(vc_place);
+
+	DBMS_OUTPUT.PUT_LINE('PRINTING BY USING LOOP ----- ');
+	WHILE vn_counter <= vn_length LOOP
+		DBMS_OUTPUT.PUT_LINE(SUBSTR(vc_place, vn_counter, 1));
+		vn_counter := vn_counter + 1;
+	END LOOP;
+END;
+/

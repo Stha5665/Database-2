@@ -1,0 +1,113 @@
+-- Inserting into addresses
+INSERT INTO addresses(road,city,nation)
+VALUES('40 JAPAN STREET', 'TOKYO', 'JAPAN');
+
+INSERT INTO addresses(road,city,nation)
+VALUES('60 ENGLISH STREET', 'DEFORD', 'US');
+
+INSERT INTO addresses(road,city,nation)
+VALUES('90 FESTIVE ROAD', 'NORTHAMPTON', 'UK');
+
+INSERT INTO addresses(road,city,nation)
+VALUES('20 ST ATE STREET', 'CALIFORNIA', 'USA');
+
+INSERT INTO addresses(road,city,nation)
+VALUES('90 ENGLISH STREET', 'DEFORD', 'ENGLAND');
+
+-- Inserting into retreats
+INSERT INTO retreats(retreat_id, review, type)
+VALUES (1, 'Nice fresh package within budget',
+retreat_varray_type (
+retreat_type('ENERGISING', 'Y'),
+retreat_type ('CHALLENGING', 'Y')));
+ 
+-- Inserting into retreats
+INSERT INTO retreats(retreat_id, review, type)
+VALUES (2, 'Nice fresh package within budget',
+retreat_varray_type (
+retreat_type('WEIGHT LOSS', 'Y'),
+retreat_type('REST AND RELAXATION', 'N')));
+
+-- Inserting into settings
+INSERT INTO settings(setting_id,place,address)
+SELECT 1,'LAKESIDE', REF(a)
+FROM addresses a
+WHERE a.nation = 'UK';
+
+INSERT INTO settings(setting_id,place,address)
+SELECT 2,'WOODLAND', REF(a)
+FROM addresses a
+WHERE a.nation = 'USA';
+
+INSERT INTO settings(setting_id,place,address)
+SELECT 3,'WINTER WONDERLAND', REF(a)
+FROM addresses a
+WHERE a.city = 'TOKYO';
+
+INSERT INTO settings(setting_id,place,address)
+SELECT 4,'ECO FRIENDLY', REF(a)
+FROM addresses a
+WHERE a.city = 'NORTHAMPTON';
+
+INSERT INTO settings(setting_id,place,address)
+SELECT 8,'PLANETARY LEY LINES', REF(a)
+FROM addresses a
+WHERE a.road = '90 ENGLISH STREET';
+
+-- Inserting into accomodation_styles
+INSERT INTO accomodation_styles(accomodation_style_id, room)
+VALUES(1, 'CABIN');
+INSERT INTO accomodation_styles(accomodation_style_id, room)
+VALUES(2, 'TEEPEE');
+INSERT INTO accomodation_styles(accomodation_style_id, room)
+VALUES(3, 'LUXURY');
+INSERT INTO accomodation_styles(accomodation_style_id, room)
+VALUES(4, 'RUSTIC');
+
+-- Inserting into accomodations
+INSERT INTO accomodations(accomodation_id,accomodation_style_id, name, no_of_room, price_level, facility)
+VALUES (11, 1, 'HAPPY STAY', 10, 200, 'HEALTH ROOM');
+
+INSERT INTO accomodations(accomodation_id,accomodation_style_id, name, no_of_room, price_level, facility, address, contact_media)
+VALUES (13, 2, 'FOUNTAIN FUN',30, 300,'BAR',
+address_type('90 FESTIVE ROAD', 'NORTHAMPTON', 'UK'),
+contact_table_type(
+	contact_type('INSTRA', 'fountain@12', 'fountain@123gmail.com'),
+	contact_type('FB', 'Fountain Funz', 'fountain@12gmail.com')));
+
+INSERT INTO accomodations(accomodation_id,accomodation_style_id, name, no_of_room, price_level, facility,address,contact_media)
+VALUES (14, 3, 'HOTEL ELITE',20, 450,'HEALTH CLUB',
+address_type('20 ST ATE STREET', 'CALIFORNIA', 'USA'),
+contact_table_type(
+	contact_type('TWITTER', 'ELITE@12', 'elite@123gmail.com'),
+	contact_type('FB', 'ELITE Fun', 'hotelelite@12gmail.com')));
+
+INSERT INTO accomodations(accomodation_id,accomodation_style_id, name, no_of_room, price_level, facility,address, contact_media)
+VALUES (15, 1, 'CROWN PLAZA',20, 650,'DISABLED ROOM',
+address_type('90 FESTIVE ROAD', 'NORTHAMPTON', 'UK'),
+contact_table_type(
+	contact_type('TWITTER', 'crown@45', 'crownplaza@123gmail.com'),
+	contact_type('INSTRA', 'crown@45', 'crownplaza@123gmail.com'),
+	contact_type('FB', 'CROWN PLAZA', 'plazacrown@12gmail.com')));
+
+-- Insert into retreat_settings
+INSERT INTO  retreat_settings(setting_id , retreat_id, retreat_setting_id, duration)
+VALUES(01, 1 , 1, 'THREE YEARS');
+INSERT INTO  retreat_settings(setting_id , retreat_id, retreat_setting_id, duration)
+VALUES(2, 2 , 2, 'ONE MONTH');
+INSERT INTO  retreat_settings(setting_id , retreat_id, retreat_setting_id, duration)
+VALUES(1, 2 , 3, 'TWO WEEKS');
+INSERT INTO  retreat_settings(setting_id , retreat_id, retreat_setting_id, duration)
+VALUES(3, 1 , 4, 'FIVE HOURS');
+
+--Inserting into retreat_accomodations
+INSERT INTO retreat_accomodations(accomodation_id, retreat_setting_id, retreat_accomodation_id, arrival_date)
+VALUES(11, 1, 2, '04-JAN-2022');
+INSERT INTO retreat_accomodations(accomodation_id, retreat_setting_id, retreat_accomodation_id, arrival_date)
+VALUES(11, 1, 1, '04-FEB-2022');
+INSERT INTO retreat_accomodations(accomodation_id, retreat_setting_id, retreat_accomodation_id, arrival_date)
+VALUES(13, 2, 3, '04-FEB-2021');
+INSERT INTO retreat_accomodations(accomodation_id, retreat_setting_id, retreat_accomodation_id, arrival_date)
+VALUES(14, 1, 4, '04-MARCH-2022');
+INSERT INTO retreat_accomodations(accomodation_id,retreat_accomodation_id, arrival_date)
+VALUES(11,104, '1-oct-2022');

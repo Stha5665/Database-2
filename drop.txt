@@ -1,0 +1,68 @@
+-- dropping trigger
+DROP TRIGGER trig_arrival_date_ck;
+
+-- dropping procedure
+DROP PROCEDURE proc_show_no_of_rooms;
+DROP PROCEDURE proc_acc_demo;
+DROP PROCEDURE proc_show_setting_place;
+
+-- dropping cursors
+DROP PROCEDURE proc_ck_arrival_date;
+DROP PROCEDURE proc_update_acc_style_cursor;
+
+
+-- dropping functions
+DROP FUNCTION func_calc_months_between;
+DROP FUNCTION func_calc_total_rooms;
+
+-- dropping foreign key constraint
+
+ALTER TABLE retreat_accomodations
+DROP CONSTRAINT fk_r_a_retreat_settings;
+
+ALTER TABLE accomodations
+DROP CONSTRAINT fk_a_accomodation_styles;
+
+ALTER TABLE retreat_accomodations
+DROP CONSTRAINT fk_r_a_accomodations;
+
+ALTER TABLE retreat_settings
+DROP CONSTRAINT fk_r_s_settings;
+
+ALTER TABLE retreat_settings
+DROP CONSTRAINT fk_r_s_retreats;
+
+-- dropping primary key constraint
+
+ALTER TABLE retreat_accomodations
+DROP CONSTRAINT pk_retreat_accomodations;
+
+ALTER TABLE accomodations
+DROP CONSTRAINT pk_accomodations;
+
+ALTER TABLE accomodation_styles
+DROP CONSTRAINT pk_accomodation_styles;
+
+ALTER TABLE retreat_settings
+DROP CONSTRAINT pk_retreat_settings;
+
+ALTER TABLE retreats
+DROP CONSTRAINT pk_retreats;
+
+ALTER TABLE settings
+DROP CONSTRAINT pk_settings;
+
+
+DROP TABLE retreat_accomodations;
+DROP TABLE retreat_settings;
+DROP TABLE retreats;
+DROP TABLE settings;
+DROP TABLE accomodations;
+DROP TABLE accomodation_styles;
+DROP TABLE addresses;
+
+DROP TYPE contact_table_type;
+DROP TYPE contact_type;
+DROP TYPE retreat_varray_type;
+DROP TYPE retreat_type;
+DROP TYPE address_type;
